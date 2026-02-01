@@ -1,7 +1,10 @@
 
 import { GoogleGenAI } from "@google/genai";
 
-// Cloudflare environment variables are accessed via process.env in the build step
+/**
+ * API_KEY is sourced from Vercel Environment Variables.
+ * Ensure you have added 'API_KEY' in your Vercel Project Settings.
+ */
 const API_KEY = process.env.API_KEY;
 
 let cachedIntel: string[] | null = null;
@@ -21,9 +24,9 @@ export const fetchTacticalIntel = async (): Promise<string[]> => {
     return cachedIntel;
   }
 
-  // If no API key is present, fail silently and immediately use the high-fidelity fallback
+  // Use fallback if API key is missing or explicitly undefined string
   if (!API_KEY || API_KEY === "undefined") {
-    console.warn("SVE_INTEL: No API_KEY detected. Using local buffer.");
+    console.warn("SVE_INTEL: No API_KEY detected in Vercel environment. Using local buffer.");
     return fallback;
   }
 
@@ -46,10 +49,7 @@ export const fetchTacticalIntel = async (): Promise<string[]> => {
     }
     return fallback;
   } catch (error: any) {
-    // Handle rate limits or network issues in the Cloudflare environment
-    if (error?.message?.includes('429')) {
-      console.warn("SVE_INTEL: Rate limit encountered. Reverting to stored buffer.");
-    }
+    console.error("SVE_INTEL_ERROR:", error);
     return fallback;
   }
 };
