@@ -1,5 +1,5 @@
 {
-  "name": "SVE Power Portal",
+  "name": "svesac",
   "description": "The official brand command center for Sacramento vs. Everybody. Optimized for Cloudflare Pages with high-fidelity brand assets.",
   "requestFramePermissions": [],
   "deployment_target": "cloudflare"
