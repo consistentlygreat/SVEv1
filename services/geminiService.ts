@@ -1,28 +1,31 @@
 
 import { GoogleGenAI } from "@google/genai";
 
+// Cloudflare environment variables are accessed via process.env in the build step
 const API_KEY = process.env.API_KEY;
 
-// Keep a simple cache to avoid frequent requests that hit quota limits
 let cachedIntel: string[] | null = null;
 let lastFetchTime = 0;
-const CACHE_DURATION = 1000 * 60 * 15; // 15 minutes cache
+const CACHE_DURATION = 1000 * 60 * 15; // 15 minutes
 
 export const fetchTacticalIntel = async (): Promise<string[]> => {
   const fallback = [
-    "916 RECLAMATION: Meta anchors $50M into Sac State innovation.",
-    "CAPITAL_SYNC: Tech migration from Bay Area to 916 increases 12%.",
-    "SVE_CORE: SECTOR STEADY",
-    "GROWTH PROJECTION: BULLISH",
-    "COMMERCE_UPLINK: Stripe-enabled secure checkout active."
+    "916 RECLAMATION: Tech migration to Sacramento up 12%.",
+    "CAPITAL_SYNC: SVE infrastructure reaching peak stability.",
+    "SVE_CORE: SECTOR STEADY // 2026 HORIZON ACTIVE",
+    "GROWTH PROJECTION: BULLISH // SACRAMENTO DOMINANCE",
+    "COMMERCE_UPLINK: Secure Stripe checkout active."
   ];
 
-  // Return cache if it exists and is fresh
   if (cachedIntel && (Date.now() - lastFetchTime < CACHE_DURATION)) {
     return cachedIntel;
   }
 
-  if (!API_KEY) return fallback;
+  // If no API key is present, fail silently and immediately use the high-fidelity fallback
+  if (!API_KEY || API_KEY === "undefined") {
+    console.warn("SVE_INTEL: No API_KEY detected. Using local buffer.");
+    return fallback;
+  }
 
   try {
     const ai = new GoogleGenAI({ apiKey: API_KEY });
@@ -34,7 +37,7 @@ export const fetchTacticalIntel = async (): Promise<string[]> => {
     const text = response.text || "";
     const lines = text.split('\n')
       .map(line => line.replace(/^\d+\.\s*/, '').trim())
-      .filter(line => line.length > 10 && line.length < 120);
+      .filter(line => line.length > 5 && line.length < 120);
       
     if (lines.length > 0) {
       cachedIntel = lines;
@@ -43,11 +46,9 @@ export const fetchTacticalIntel = async (): Promise<string[]> => {
     }
     return fallback;
   } catch (error: any) {
-    // If we hit a 429 or any other error, log it once and return fallback
-    if (error?.message?.includes('429') || error?.status === 429) {
-      console.warn("SVE_INTEL_UPLINK: Rate limit exceeded. Operating on stored local buffer.");
-    } else {
-      console.error("SVE_INTEL_UPLINK: Transmission failed.", error);
+    // Handle rate limits or network issues in the Cloudflare environment
+    if (error?.message?.includes('429')) {
+      console.warn("SVE_INTEL: Rate limit encountered. Reverting to stored buffer.");
     }
     return fallback;
   }
