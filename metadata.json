@@ -1,6 +1,6 @@
 {
   "name": "SVE Power Portal",
-  "description": "The official brand command center for Sacramento vs. Everybody. High-fidelity brand assets, membership intake, and founding merch.",
+  "description": "The official brand command center for Sacramento vs. Everybody. Optimized for Cloudflare Pages with high-fidelity brand assets.",
   "requestFramePermissions": [],
-  "deployment_target": "vercel"
+  "deployment_target": "cloudflare"
 }

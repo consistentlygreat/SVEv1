@@ -1,9 +1,8 @@
-
 import { GoogleGenAI } from "@google/genai";
 
 /**
- * API_KEY is sourced from Vercel Environment Variables.
- * Ensure you have added 'API_KEY' in your Vercel Project Settings.
+ * API_KEY is sourced from Cloudflare Pages Environment Variables.
+ * Ensure you have added 'API_KEY' in your Cloudflare Project Settings.
  */
 const API_KEY = process.env.API_KEY;
 
@@ -26,7 +25,7 @@ export const fetchTacticalIntel = async (): Promise<string[]> => {
 
   // Use fallback if API key is missing or explicitly undefined string
   if (!API_KEY || API_KEY === "undefined") {
-    console.warn("SVE_INTEL: No API_KEY detected in Vercel environment. Using local buffer.");
+    console.warn("SVE_INTEL: No API_KEY detected in Cloudflare environment. Using local buffer.");
     return fallback;
   }
 
